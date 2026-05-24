@@ -1,0 +1,11 @@
+{
+    "custom/ws-profile": {
+        "exec": "~/.config/hypr/scripts/workspace_profile_status.sh",
+        "return-type": "json",
+        "interval": 5,
+        "signal": 8,
+        "format": "{}",
+        "tooltip": true,
+        "escape": false
+    }
+}

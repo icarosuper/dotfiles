@@ -1,0 +1,22 @@
+/* User custom styles */
+
+/* Workspace pill */
+#custom-ws-workspaces {
+    padding: 0.82em 0.3em;
+    color: @main-fg;
+}
+
+/* Profile pill */
+#custom-ws-profile {
+    padding: 0.82em 0.3em;
+    color: @main-fg;
+}
+
+/* mpris sem wrapper de pill — estiliza direto como pill */
+#mpris {
+    background: @main-bg;
+    border-radius: 10pt;
+    margin: 0.5em 1em 0.5em 1em;
+    padding: 0em 0.75em;
+    color: @main-fg;
+}
