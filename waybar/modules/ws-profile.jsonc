@@ -6,6 +6,8 @@
         "signal": 8,
         "format": "{}",
         "tooltip": true,
-        "escape": false
+        "escape": false,
+        "on-click": "~/.config/hypr/scripts/workspace_group.sh profile-next",
+        "on-click-right": "~/.config/hypr/scripts/workspace_group.sh profile-prev"
     }
 }
