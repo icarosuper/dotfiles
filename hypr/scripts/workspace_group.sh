@@ -137,6 +137,48 @@ case $1 in
         pkill -SIGRTMIN+9 waybar 2>/dev/null
         ;;
 
+    move-next)
+        mon=$(get_active_monitor)
+        p=$(cat "$(profile_file "$mon")" 2>/dev/null || echo "1")
+        if [ "$p" = "1" ]; then
+            hyprctl dispatch split-movetoworkspace r+1
+        else
+            n=$(get_current_ws_num "$p")
+            hyprctl dispatch movetoworkspace "$(ws_arg "$p" $(( n + 1 )) "$mon")"
+        fi
+        ;;
+    move-prev)
+        mon=$(get_active_monitor)
+        p=$(cat "$(profile_file "$mon")" 2>/dev/null || echo "1")
+        if [ "$p" = "1" ]; then
+            hyprctl dispatch split-movetoworkspace r-1
+        else
+            n=$(get_current_ws_num "$p")
+            new=$(( n - 1 )); [ "$new" -lt 1 ] && new=1
+            hyprctl dispatch movetoworkspace "$(ws_arg "$p" "$new" "$mon")"
+        fi
+        ;;
+    move-next-silent)
+        mon=$(get_active_monitor)
+        p=$(cat "$(profile_file "$mon")" 2>/dev/null || echo "1")
+        if [ "$p" = "1" ]; then
+            hyprctl dispatch split-movetoworkspacesilent r+1
+        else
+            n=$(get_current_ws_num "$p")
+            hyprctl dispatch movetoworkspacesilent "$(ws_arg "$p" $(( n + 1 )) "$mon")"
+        fi
+        ;;
+    move-prev-silent)
+        mon=$(get_active_monitor)
+        p=$(cat "$(profile_file "$mon")" 2>/dev/null || echo "1")
+        if [ "$p" = "1" ]; then
+            hyprctl dispatch split-movetoworkspacesilent r-1
+        else
+            n=$(get_current_ws_num "$p")
+            new=$(( n - 1 )); [ "$new" -lt 1 ] && new=1
+            hyprctl dispatch movetoworkspacesilent "$(ws_arg "$p" "$new" "$mon")"
+        fi
+        ;;
     move)
         mon=$(get_active_monitor)
         p=$(cat "$(profile_file "$mon")" 2>/dev/null || echo "1")
