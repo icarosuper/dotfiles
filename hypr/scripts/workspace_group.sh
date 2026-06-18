@@ -84,6 +84,44 @@ switch_to_profile() {
     notify_waybar
 }
 
+get_restore_ws() {
+    local p=$1 mon=$2
+    local ms; ms=$(mon_short "$mon")
+    local saved
+    saved=$(cat "$STATE_DIR/profile_${p}_${mon}" 2>/dev/null)
+    if [ -z "$saved" ]; then
+        ws_arg "$p" 1 "$mon"
+        return
+    fi
+    if [ "$p" = "1" ]; then
+        echo "$saved"
+    else
+        [[ "$saved" =~ ^p[0-9]+w[0-9]+${ms}$ ]] \
+            && echo "name:$saved" \
+            || ws_arg "$p" 1 "$mon"
+    fi
+}
+
+switch_to_profile_with_window() {
+    local new=$1
+    local mon; mon=$(get_active_monitor)
+    local cur; cur=$(cat "$(profile_file "$mon")" 2>/dev/null || echo "1")
+    [ "$new" = "$cur" ] && return
+    local target_ws
+    target_ws=$(get_restore_ws "$new" "$mon")
+    [[ "$target_ws" == name:* ]] && hyprctl dispatch moveworkspacetomonitor "$target_ws" "$mon" 2>/dev/null
+    if [ "$new" = "1" ]; then
+        hyprctl dispatch split-movetoworkspacesilent "$target_ws"
+    else
+        hyprctl dispatch movetoworkspacesilent "$target_ws"
+    fi
+    save_profile_state "$cur" "$mon"
+    echo "$new" > "$(profile_file "$mon")"
+    restore_profile_state "$new" "$mon"
+    notify-send "Perfil" "$new" -t 1000 2>/dev/null
+    notify_waybar
+}
+
 get_current_ws_num() {
     local p=$1
     if [ "$p" = "1" ]; then
@@ -100,6 +138,10 @@ case $1 in
         p=$(get_profile); switch_to_profile $(( p + 1 )) ;;
     profile-prev)
         p=$(get_profile); new=$(( p - 1 )); [ "$new" -lt 1 ] && new=1; switch_to_profile "$new" ;;
+    profile-next-with-window)
+        p=$(get_profile); switch_to_profile_with_window $(( p + 1 )) ;;
+    profile-prev-with-window)
+        p=$(get_profile); new=$(( p - 1 )); [ "$new" -lt 1 ] && new=1; switch_to_profile_with_window "$new" ;;
     profile-go)
         switch_to_profile "$2" ;;
 
